@@ -3,6 +3,7 @@ import { useColorScheme } from "react-native";
 import { PaperProvider } from "react-native-paper";
 import AuthFlow from "./src/AuthFlow";
 
+import { CourseProviderWrapper } from "./src/core/CourseProviderWrapper";
 import { DIProvider } from "./src/core/di/DIProvider";
 import { AuthProvider } from "./src/features/auth/presentation/context/authContext";
 import { ProductProvider } from "./src/features/products/presentation/context/productContext";
@@ -35,9 +36,11 @@ export default function App() {
       <DIProvider>
         <AuthProvider>
           <ProductProvider>
-            <NavigationContainer theme={navigationTheme}>
-              <AuthFlow />
-            </NavigationContainer>
+            <CourseProviderWrapper>
+              <NavigationContainer theme={navigationTheme}>
+                <AuthFlow />
+              </NavigationContainer>
+            </CourseProviderWrapper>
           </ProductProvider>
         </AuthProvider>
       </DIProvider>

@@ -8,12 +8,19 @@ import { GetCurrentUserUseCase } from "@/src/features/auth/domain/usecases/GetCu
 import { LoginUseCase } from "@/src/features/auth/domain/usecases/LoginUseCase";
 import { LogoutUseCase } from "@/src/features/auth/domain/usecases/LogoutUseCase";
 import { SignupUseCase } from "@/src/features/auth/domain/usecases/SignupUseCase";
+import { CourseRemoteDataSourceImpl } from "@/src/features/products/data/datasources/CourseRemoteDataSourceImpl";
 import { ProductRemoteDataSourceImp } from "@/src/features/products/data/datasources/ProductRemoteDataSourceImp";
+import { CourseRepositoryImpl } from "@/src/features/products/data/repositories/CourseRepositoryImpl";
 import { ProductRepositoryImpl } from "@/src/features/products/data/repositories/ProductRepositoryImpl";
 import { AddProductUseCase } from "@/src/features/products/domain/usecases/AddProductUseCase";
+import { CreateCourseUseCase } from "@/src/features/products/domain/usecases/CreateCourseUseCase";
+import { DeleteCourseUseCase } from "@/src/features/products/domain/usecases/DeleteCourseUseCase";
 import { DeleteProductUseCase } from "@/src/features/products/domain/usecases/DeleteProductUseCase";
+import { GetCoursesUseCase } from "@/src/features/products/domain/usecases/GetCoursesUseCase";
 import { GetProductByIdUseCase } from "@/src/features/products/domain/usecases/GetProductByIdUseCase";
 import { GetProductsUseCase } from "@/src/features/products/domain/usecases/GetProductsUseCase";
+import { JoinCourseUseCase } from "@/src/features/products/domain/usecases/JoinCourseUseCase";
+import { UpdateCourseUseCase } from "@/src/features/products/domain/usecases/UpdateCourseUseCase";
 import { UpdateProductUseCase } from "@/src/features/products/domain/usecases/UpdateProductUseCase";
 import { Container } from "./container";
 
@@ -45,7 +52,17 @@ export function DIProvider({ children }: { children: React.ReactNode }) {
             .register(TOKENS.GetProductsUC, new GetProductsUseCase(productRepo))
             .register(TOKENS.GetProductByIdUC, new GetProductByIdUseCase(productRepo));
 
+        // Course dependencies
+        const courseDS = new CourseRemoteDataSourceImpl();
+        const courseRepo = new CourseRepositoryImpl(courseDS);
 
+        c.register(TOKENS.CourseRemoteDS, courseDS)
+            .register(TOKENS.CourseRepo, courseRepo)
+            .register(TOKENS.GetCoursesUC, new GetCoursesUseCase(courseRepo))
+            .register(TOKENS.CreateCourseUC, new CreateCourseUseCase(courseRepo))
+            .register(TOKENS.UpdateCourseUC, new UpdateCourseUseCase(courseRepo))
+            .register(TOKENS.DeleteCourseUC, new DeleteCourseUseCase(courseRepo))
+            .register(TOKENS.JoinCourseUC, new JoinCourseUseCase(courseRepo));
 
         return c;
     }, []);

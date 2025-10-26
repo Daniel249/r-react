@@ -68,9 +68,32 @@ export class LocalPreferencesAsyncStorage implements ILocalPreferences {
             console.error(`Error replacing entries for ${key}`, e);
         }
     }
-    clearAll(): Promise<void> {
-        throw new Error("Method not implemented.");
+    async clearAll(): Promise<void> {
+        try {
+            await AsyncStorage.clear();
+        } catch (e) {
+            console.error("Error clearing all data", e);
+        }
     }
 
+    async getAuthToken(): Promise<string | null> {
+        return this.retrieveData<string>('auth_token');
+    }
 
+    async setAuthToken(token: string): Promise<void> {
+        return this.storeData('auth_token', token);
+    }
+
+    async getUser(): Promise<import("../features/auth/domain/entities/AuthUser").AuthUser | null> {
+        return this.retrieveData<import("../features/auth/domain/entities/AuthUser").AuthUser>('current_user');
+    }
+
+    async setUser(user: import("../features/auth/domain/entities/AuthUser").AuthUser): Promise<void> {
+        return this.storeData('current_user', user);
+    }
+
+    async clearAuth(): Promise<void> {
+        await this.removeData('auth_token');
+        await this.removeData('current_user');
+    }
 }
