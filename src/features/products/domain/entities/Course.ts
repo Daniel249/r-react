@@ -35,7 +35,18 @@ export class CourseEntity implements Course {
   }
 
   private static parseStudentNames(json: any): string[] {
-    const students = json.Students ?? json.students ?? [];
+    let students = json.Students ?? json.students ?? [];
+    
+    // If students is a string, it might be JSON that needs to be parsed
+    if (typeof students === 'string') {
+      try {
+        students = JSON.parse(students);
+      } catch (error) {
+        console.warn('Failed to parse students JSON:', students);
+        return [];
+      }
+    }
+    
     if (Array.isArray(students)) {
       return students.map(student => student.toString());
     }

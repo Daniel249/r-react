@@ -77,11 +77,11 @@ export class LocalPreferencesAsyncStorage implements ILocalPreferences {
     }
 
     async getAuthToken(): Promise<string | null> {
-        return this.retrieveData<string>('auth_token');
+        return this.retrieveData<string>('access_token');
     }
 
     async setAuthToken(token: string): Promise<void> {
-        return this.storeData('auth_token', token);
+        return this.storeData('access_token', token);
     }
 
     async getUser(): Promise<import("../features/auth/domain/entities/AuthUser").AuthUser | null> {
@@ -93,7 +93,7 @@ export class LocalPreferencesAsyncStorage implements ILocalPreferences {
     }
 
     async clearAuth(): Promise<void> {
-        await this.removeData('auth_token');
+        await this.removeData('access_token');
         await this.removeData('current_user');
     }
 }

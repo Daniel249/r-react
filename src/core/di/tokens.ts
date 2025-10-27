@@ -20,4 +20,17 @@ export const TOKENS = {
   UpdateCourseUC: Symbol("UpdateCourseUC"),
   DeleteCourseUC: Symbol("DeleteCourseUC"),
   JoinCourseUC: Symbol("JoinCourseUC"),
+  // Category tokens
+  CategoryRemoteDS: Symbol("CategoryRemoteDS"),
+  CategoryRepo: Symbol("CategoryRepo"),
+  CategoryUC: Symbol("CategoryUC"),
+  // Activity tokens
+  ActivityRemoteDS: Symbol("ActivityRemoteDS"),
+  ActivityRepo: Symbol("ActivityRepo"),
+  ActivityUC: Symbol("ActivityUC"),
+  UpdateAssessmentResultsUC: Symbol("UpdateAssessmentResultsUC"),
+  // Group tokens
+  GroupRemoteDS: Symbol("GroupRemoteDS"),
+  GroupRepo: Symbol("GroupRepo"),
+  GroupUC: Symbol("GroupUC"),
 } as const;

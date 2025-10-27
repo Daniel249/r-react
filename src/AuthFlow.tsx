@@ -1,14 +1,13 @@
-import { FontAwesome6 } from "@react-native-vector-icons/fontawesome6";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-import { IconButton } from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { Divider, IconButton, List, Surface, Text } from "react-native-paper";
 
 import { useAuth } from "./features/auth/presentation/context/authContext";
 import LoginScreen from "./features/auth/presentation/screens/LoginScreen";
 import SignupScreen from "./features/auth/presentation/screens/SignupScreen";
 import AddProductScreen from "./features/products/presentation/screens/AddProductScreen";
-import ProductListScreen from "./features/products/presentation/screens/ProductListScreen";
 import UpdateProductScreen from "./features/products/presentation/screens/UpdateProductScreen";
 import SettingScreen from "./features/settings/SettingScreen";
 
@@ -17,122 +16,137 @@ import CreateCourseScreen from "./features/products/presentation/screens/CreateC
 import JoinCourseScreen from "./features/products/presentation/screens/JoinCourseScreen";
 import StudentCourseDetailScreen from "./features/products/presentation/screens/StudentCourseDetailScreen";
 import StudentCourseListScreen from "./features/products/presentation/screens/StudentCourseListScreen";
+import TeacherCourseDetailScreen from "./features/products/presentation/screens/TeacherCourseDetailScreen";
 import TeacherCourseListScreen from "./features/products/presentation/screens/TeacherCourseListScreen";
+import UpdateCourseScreen from "./features/products/presentation/screens/UpdateCourseScreen";
+
+// Assessment screens
+import AssessmentResultsScreen from "./features/products/presentation/screens/AssessmentResultsScreen";
+import AssessmentScreen from "./features/products/presentation/screens/AssessmentScreen";
+import GroupDetailScreen from "./features/products/presentation/screens/GroupDetailScreen";
+import JoinGroupScreen from "./features/products/presentation/screens/JoinGroupScreen";
 
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
+
+// Custom drawer content component
+function CustomDrawerContent(props: any) {
+  const { logout, user } = useAuth();
+  const userRole = user?.role || 'student';
+
+  const handleNavigation = (screenName: string) => {
+    props.navigation.navigate(screenName);
+  };
+
+  const menuItems = [
+    { name: "Student", screen: "StudentView", icon: "school" },
+    { name: "Teacher", screen: "TeacherView", icon: "account-tie" },
+    { name: "Profile", screen: "Profile", icon: "account" },
+  ];
+
+  return (
+    <Surface style={styles.drawerContainer}>
+      <View style={styles.drawerHeader}>
+        <Text variant="headlineSmall" style={styles.drawerTitle}>
+          {userRole === 'teacher' ? 'Teacher Dashboard' : 'Student Dashboard'}
+        </Text>
+        <Text variant="bodyMedium" style={styles.userInfo}>
+          {user?.name || user?.email}
+        </Text>
+      </View>
+      
+      <Divider />
+      
+      <View style={styles.drawerContent}>
+        {menuItems.map((item) => (
+          <List.Item
+            key={item.screen}
+            title={item.name}
+            left={(props) => <List.Icon {...props} icon={item.icon} />}
+            onPress={() => handleNavigation(item.screen)}
+            style={styles.menuItem}
+          />
+        ))}
+      </View>
+
+      <Divider />
+      
+      <View style={styles.drawerFooter}>
+        <List.Item
+          title="Logout"
+          left={(props) => <List.Icon {...props} icon="logout" color="#d32f2f" />}
+          onPress={logout}
+          style={styles.logoutItem}
+          titleStyle={styles.logoutText}
+        />
+      </View>
+    </Surface>
+  );
+}
 
 export default function AuthFlow() {
   const { isLoggedIn, logout, user } = useAuth();
 
-  function StudentTabs() {
+  function AppDrawer() {
+    const userRole = user?.role || 'student';
+    
     return (
-      <Tab.Navigator
+      <Drawer.Navigator
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
           headerShown: true,
-          headerTitle: "Student Dashboard",
-          headerRight: () => (
-            <IconButton icon="logout" onPress={() => logout()} />
-          ),
           headerTitleAlign: "left",
           headerStyle: {
             elevation: 0, // Remove shadow on Android
             shadowOpacity: 0, // Remove shadow on iOS
           },
+          drawerType: 'front', // Drawer slides from left
+          drawerStyle: {
+            width: 280,
+          },
+          swipeEnabled: true, // Enable swipe to open
         }}
       >
-        <Tab.Screen
-          name="MyCourses"
+        <Drawer.Screen
+          name="StudentView"
           component={StudentCourseListScreen}
           options={{
-            title: "My Courses",
-            tabBarIcon: ({ color }) => (
-              <FontAwesome6 name="book" size={24} color={color} iconStyle="solid" />
-            )
+            title: "Student",
+            headerRight: () => (
+              <IconButton icon="logout" onPress={() => logout()} />
+            ),
           }}
         />
-        <Tab.Screen
-          name="Products"
-          component={ProductListScreen}
-          options={{
-            tabBarIcon: ({ color }) => (
-              <FontAwesome6 name="box" size={24} color={color} iconStyle="solid" />
-            )
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={SettingScreen}
-          options={{
-            tabBarIcon: ({ color }) => (
-              <FontAwesome6 name="user" size={24} color={color} />
-            )
-          }}
-        />
-      </Tab.Navigator>
-    );
-  }
-
-  function TeacherTabs() {
-    return (
-      <Tab.Navigator
-        screenOptions={{
-          headerShown: true,
-          headerTitle: "Teacher Dashboard",
-          headerRight: () => (
-            <IconButton icon="logout" onPress={() => logout()} />
-          ),
-          headerTitleAlign: "left",
-          headerStyle: {
-            elevation: 0, // Remove shadow on Android
-            shadowOpacity: 0, // Remove shadow on iOS
-          },
-        }}
-      >
-        <Tab.Screen
-          name="MyCourses"
+        <Drawer.Screen
+          name="TeacherView"
           component={TeacherCourseListScreen}
           options={{
-            title: "My Courses",
-            tabBarIcon: ({ color }) => (
-              <FontAwesome6 name="chalkboard-user" size={24} color={color} iconStyle="solid" />
-            )
+            title: "Teacher",
+            headerRight: () => (
+              <IconButton icon="logout" onPress={() => logout()} />
+            ),
           }}
         />
-        <Tab.Screen
-          name="Products"
-          component={ProductListScreen}
-          options={{
-            tabBarIcon: ({ color }) => (
-              <FontAwesome6 name="box" size={24} color={color} iconStyle="solid" />
-            )
-          }}
-        />
-        <Tab.Screen
+        <Drawer.Screen
           name="Profile"
           component={SettingScreen}
           options={{
-            tabBarIcon: ({ color }) => (
-              <FontAwesome6 name="user" size={24} color={color} />
-            )
+            title: "Profile",
+            headerRight: () => (
+              <IconButton icon="logout" onPress={() => logout()} />
+            ),
           }}
         />
-      </Tab.Navigator>
+      </Drawer.Navigator>
     );
-  }
-
-  function ContentTabs() {
-    // Default to student view if role is not set
-    const userRole = user?.role || 'student';
-    return userRole === 'teacher' ? <TeacherTabs /> : <StudentTabs />;
   }
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isLoggedIn ? (
         <>
-          <Stack.Screen name="App" component={ContentTabs} />
+          <Stack.Screen name="App" component={AppDrawer} />
           <Stack.Screen
             name="AddProductScreen"
             component={AddProductScreen}
@@ -177,6 +191,54 @@ export default function AuthFlow() {
               headerShown: true,
             }}
           />
+          <Stack.Screen
+            name="TeacherCourseDetailScreen"
+            component={TeacherCourseDetailScreen}
+            options={{
+              title: "Course Management",
+              headerShown: false, // Using custom Appbar in component
+            }}
+          />
+          <Stack.Screen
+            name="UpdateCourseScreen"
+            component={UpdateCourseScreen}
+            options={{
+              title: "Update Course",
+              headerShown: false, // Using custom Appbar in component
+            }}
+          />
+          <Stack.Screen
+            name="GroupDetailScreen"
+            component={GroupDetailScreen}
+            options={{
+              title: "Group Details",
+              headerShown: false, // Using custom Appbar in component
+            }}
+          />
+          <Stack.Screen
+            name="AssessmentScreen"
+            component={AssessmentScreen}
+            options={{
+              title: "Assessment",
+              headerShown: false, // Using custom Appbar in component
+            }}
+          />
+          <Stack.Screen
+            name="AssessmentResultsScreen"
+            component={AssessmentResultsScreen}
+            options={{
+              title: "Assessment Results",
+              headerShown: false, // Using custom Appbar in component
+            }}
+          />
+          <Stack.Screen
+            name="JoinGroupScreen"
+            component={JoinGroupScreen}
+            options={{
+              title: "Join or Create Group",
+              headerShown: false, // Using custom Appbar in component
+            }}
+          />
         </>
       ) : (
         <>
@@ -187,3 +249,37 @@ export default function AuthFlow() {
     </Stack.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  drawerContainer: {
+    flex: 1,
+  },
+  drawerHeader: {
+    padding: 20,
+    paddingTop: 40,
+    backgroundColor: '#f8f9fa',
+  },
+  drawerTitle: {
+    marginBottom: 4,
+    fontWeight: 'bold',
+  },
+  userInfo: {
+    color: '#666',
+  },
+  drawerContent: {
+    flex: 1,
+    paddingTop: 8,
+  },
+  drawerFooter: {
+    paddingBottom: 20,
+  },
+  menuItem: {
+    paddingHorizontal: 16,
+  },
+  logoutItem: {
+    paddingHorizontal: 16,
+  },
+  logoutText: {
+    color: '#d32f2f',
+  },
+});

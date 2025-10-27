@@ -1,14 +1,25 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Card, FAB, Paragraph, Text, Title } from 'react-native-paper';
+import { useAuth } from '../../../auth/presentation/context/authContext';
 import { useCourse } from '../context/courseContext';
 
 export default function StudentCourseListScreen({ navigation }: { navigation: any }) {
   const { courses, loading, error, getCourses } = useCourse();
+  const { user } = useAuth();
 
   useEffect(() => {
     getCourses();
   }, []);
+
+  // Filter courses where current user is in the students list
+  const studentCourses = useMemo(() => {
+    if (!user) return [];
+    return courses.filter(course => 
+      course.studentsNames.includes(user.email) || 
+      course.studentsNames.includes(user.name)
+    );
+  }, [courses, user]);
 
   const handleJoinCourse = () => {
     navigation.navigate('JoinCourseScreen');
@@ -38,7 +49,7 @@ export default function StudentCourseListScreen({ navigation }: { navigation: an
           </Card>
         )}
 
-        {courses.length === 0 && !loading ? (
+        {studentCourses.length === 0 && !loading ? (
           <Card style={styles.emptyCard}>
             <Card.Content>
               <Title>No Courses Found</Title>
@@ -49,7 +60,7 @@ export default function StudentCourseListScreen({ navigation }: { navigation: an
             </Card.Content>
           </Card>
         ) : (
-          courses.map((course) => (
+          studentCourses.map((course) => (
             <Card key={course.id} style={styles.courseCard} onPress={() => handleCoursePress(course)}>
               <Card.Content>
                 <Title>{course.name}</Title>

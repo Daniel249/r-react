@@ -67,13 +67,15 @@ export class CourseRemoteDataSourceImpl implements ICourseDataSource {
       
       const courseData = {
         tableName: 'Course',
-        Name: name,
-        Description: description,
-        Teacher: currentUser?.name || '',
-        Students: JSON.stringify([]),
+        records: [{
+          Name: name,
+          Description: description,
+          Teacher: currentUser?.name || '',
+          Students: JSON.stringify([]),
+        }]
       };
 
-      const response = await fetch(`${this.baseUrl}/create`, {
+      const response = await fetch(`${this.baseUrl}/insert`, {
         method: 'POST',
         headers,
         body: JSON.stringify(courseData),
@@ -98,9 +100,12 @@ export class CourseRemoteDataSourceImpl implements ICourseDataSource {
       
       const updateData = {
         tableName: 'Course',
-        id: courseId,
-        Name: name,
-        Description: description,
+        idColumn: '_id',
+        idValue: courseId,
+        updates: {
+          Name: name,
+          Description: description,
+        }
       };
 
       const response = await fetch(`${this.baseUrl}/update`, {

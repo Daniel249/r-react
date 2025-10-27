@@ -8,18 +8,28 @@ import { GetCurrentUserUseCase } from "@/src/features/auth/domain/usecases/GetCu
 import { LoginUseCase } from "@/src/features/auth/domain/usecases/LoginUseCase";
 import { LogoutUseCase } from "@/src/features/auth/domain/usecases/LogoutUseCase";
 import { SignupUseCase } from "@/src/features/auth/domain/usecases/SignupUseCase";
+import { ActivityRemoteDataSourceImpl } from "@/src/features/products/data/datasources/ActivityRemoteDataSourceImpl";
+import { CategoryRemoteDataSourceImpl } from "@/src/features/products/data/datasources/CategoryRemoteDataSourceImpl";
 import { CourseRemoteDataSourceImpl } from "@/src/features/products/data/datasources/CourseRemoteDataSourceImpl";
+import { GroupRemoteDataSourceImpl } from "@/src/features/products/data/datasources/GroupRemoteDataSourceImpl";
 import { ProductRemoteDataSourceImp } from "@/src/features/products/data/datasources/ProductRemoteDataSourceImp";
+import { ActivityRepositoryImpl } from "@/src/features/products/data/repositories/ActivityRepositoryImpl";
+import { CategoryRepositoryImpl } from "@/src/features/products/data/repositories/CategoryRepositoryImpl";
 import { CourseRepositoryImpl } from "@/src/features/products/data/repositories/CourseRepositoryImpl";
+import { GroupRepositoryImpl } from "@/src/features/products/data/repositories/GroupRepositoryImpl";
 import { ProductRepositoryImpl } from "@/src/features/products/data/repositories/ProductRepositoryImpl";
+import { ActivityUseCase } from "@/src/features/products/domain/usecases/ActivityUseCase";
 import { AddProductUseCase } from "@/src/features/products/domain/usecases/AddProductUseCase";
+import { CategoryUseCase } from "@/src/features/products/domain/usecases/CategoryUseCase";
 import { CreateCourseUseCase } from "@/src/features/products/domain/usecases/CreateCourseUseCase";
 import { DeleteCourseUseCase } from "@/src/features/products/domain/usecases/DeleteCourseUseCase";
 import { DeleteProductUseCase } from "@/src/features/products/domain/usecases/DeleteProductUseCase";
 import { GetCoursesUseCase } from "@/src/features/products/domain/usecases/GetCoursesUseCase";
 import { GetProductByIdUseCase } from "@/src/features/products/domain/usecases/GetProductByIdUseCase";
 import { GetProductsUseCase } from "@/src/features/products/domain/usecases/GetProductsUseCase";
+import { GroupUseCase } from "@/src/features/products/domain/usecases/GroupUseCase";
 import { JoinCourseUseCase } from "@/src/features/products/domain/usecases/JoinCourseUseCase";
+import { UpdateAssessmentResultsUseCase } from "@/src/features/products/domain/usecases/UpdateAssessmentResultsUseCase";
 import { UpdateCourseUseCase } from "@/src/features/products/domain/usecases/UpdateCourseUseCase";
 import { UpdateProductUseCase } from "@/src/features/products/domain/usecases/UpdateProductUseCase";
 import { Container } from "./container";
@@ -63,6 +73,31 @@ export function DIProvider({ children }: { children: React.ReactNode }) {
             .register(TOKENS.UpdateCourseUC, new UpdateCourseUseCase(courseRepo))
             .register(TOKENS.DeleteCourseUC, new DeleteCourseUseCase(courseRepo))
             .register(TOKENS.JoinCourseUC, new JoinCourseUseCase(courseRepo));
+
+        // Category dependencies
+        const categoryDS = new CategoryRemoteDataSourceImpl();
+        const categoryRepo = new CategoryRepositoryImpl(categoryDS);
+
+        c.register(TOKENS.CategoryRemoteDS, categoryDS)
+            .register(TOKENS.CategoryRepo, categoryRepo)
+            .register(TOKENS.CategoryUC, new CategoryUseCase(categoryRepo));
+
+        // Activity dependencies
+        const activityDS = new ActivityRemoteDataSourceImpl();
+        const activityRepo = new ActivityRepositoryImpl(activityDS);
+
+        c.register(TOKENS.ActivityRemoteDS, activityDS)
+            .register(TOKENS.ActivityRepo, activityRepo)
+            .register(TOKENS.ActivityUC, new ActivityUseCase(activityRepo))
+            .register(TOKENS.UpdateAssessmentResultsUC, new UpdateAssessmentResultsUseCase(activityRepo));
+
+        // Group dependencies
+        const groupDS = new GroupRemoteDataSourceImpl();
+        const groupRepo = new GroupRepositoryImpl(groupDS);
+
+        c.register(TOKENS.GroupRemoteDS, groupDS)
+            .register(TOKENS.GroupRepo, groupRepo)
+            .register(TOKENS.GroupUC, new GroupUseCase(groupRepo));
 
         return c;
     }, []);

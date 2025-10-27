@@ -1,5 +1,6 @@
 import { ILocalPreferences } from "@/src/core/iLocalPreferences";
 import { LocalPreferencesAsyncStorage } from "@/src/core/LocalPreferencesAsyncStorage";
+import { AuthUser, AuthUserEntity } from "../../domain/entities/AuthUser";
 import { AuthRemoteDataSource } from "./AuthRemoteDataSource";
 
 export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -17,7 +18,7 @@ export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     this.prefs = LocalPreferencesAsyncStorage.getInstance();
   }
 
-  async login(email: string, password: string): Promise<void> {
+  async login(email: string, password: string): Promise<AuthUser> {
     try {
       const response = await fetch(`${this.baseUrl}/login`, {
         method: "POST",
@@ -29,10 +30,15 @@ export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         const data = await response.json();
         const token = data["accessToken"];
         const refreshToken = data["refreshToken"];
-        await this.prefs.storeData("token", token);
+        await this.prefs.setAuthToken(token);
         await this.prefs.storeData("refreshToken", refreshToken);
-        console.log("Token:", token, "\nRefresh Token:", refreshToken);
-        return Promise.resolve();
+        
+        // Extract user information from the response
+        const user = AuthUserEntity.fromJson(data["user"] || { email, name: email });
+        await this.prefs.setUser(user);
+        
+        console.log("Token:", token, "\nRefresh Token:", refreshToken, "\nUser:", user);
+        return user;
       } else {
         const body = await response.json();
         throw new Error(`Login error: ${body.message}`);
@@ -43,7 +49,7 @@ export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
-  async signUp(email: string, password: string): Promise<void> {
+  async signUp(email: string, password: string): Promise<AuthUser> {
     try {
       const response = await fetch(`${this.baseUrl}/signup`, {
         method: "POST",
@@ -56,7 +62,14 @@ export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       });
 
       if (response.status === 201) {
-        return Promise.resolve();
+        const data = await response.json();
+        const user = AuthUserEntity.fromJson(data["user"] || { 
+          email, 
+          name: email.split("@")[0], 
+          password 
+        });
+        await this.prefs.setUser(user);
+        return user;
       } else {
         const body = await response.json();
         throw new Error(`Signup error: ${(body.message || []).join(" ")}`);
@@ -69,7 +82,7 @@ export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   async logOut(): Promise<void> {
     try {
-      const token = await this.prefs.retrieveData<string>("token");
+      const token = await this.prefs.getAuthToken();
       if (!token) throw new Error("No token found");
 
       const response = await fetch(`${this.baseUrl}/logout`, {
@@ -78,7 +91,7 @@ export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       });
 
       if (response.status === 201) {
-        await this.prefs.removeData("token");
+        await this.prefs.clearAuth();
         await this.prefs.removeData("refreshToken");
         console.log("Logged out successfully");
         return Promise.resolve();
@@ -127,7 +140,7 @@ export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (response.status === 201) {
         const data = await response.json();
         const newToken = data["accessToken"];
-        await this.prefs.storeData("token", newToken);
+        await this.prefs.setAuthToken(newToken);
         console.log("Token refreshed successfully");
         return true;
       } else {
@@ -139,6 +152,32 @@ export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw e;
     }
   }
+  async getCurrentUser(): Promise<AuthUser | null> {
+    try {
+      const token = await this.prefs.getAuthToken();
+      if (!token) return null;
+
+      const response = await fetch(`${this.baseUrl}/user`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        const user = AuthUserEntity.fromJson(data);
+        await this.prefs.setUser(user);
+        return user;
+      } else {
+        const body = await response.json();
+        console.error(`Get current user error: ${body.message}`);
+        return null;
+      }
+    } catch (e: any) {
+      console.error("Get current user failed", e);
+      return null;
+    }
+  }
+
   forgotPassword(email: string): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
@@ -151,7 +190,7 @@ export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
   async verifyToken(): Promise<boolean> {
     try {
-      const token = await this.prefs.retrieveData<string>("token");
+      const token = await this.prefs.getAuthToken();
       if (!token) return false;
 
       const response = await fetch(`${this.baseUrl}/verify-token`, {

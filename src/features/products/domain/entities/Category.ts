@@ -17,11 +17,11 @@ export class CategoryEntity implements Category {
 
   static fromJson(json: any): CategoryEntity {
     return new CategoryEntity(
-      json.name?.toString() ?? '',
-      json.isRandomSelection ?? false,
-      json.groupSize ?? 0,
-      json.courseID?.toString(),
-      json.id?.toString() ?? json._id?.toString() ?? '0'
+      json.name?.toString() ?? json.Name?.toString() ?? '',
+      json.isRandomSelection ?? json.IsRandomSelection ?? json.IsRandom ?? false,
+      json.groupSize ?? json.GroupSize ?? json.CourseSize ?? 0, // CourseSize is the correct column name
+      json.courseID?.toString() ?? json.CourseID?.toString(),
+      json.id?.toString() ?? json._id?.toString() ?? json.Id?.toString() ?? '0'
     );
   }
 
@@ -30,8 +30,9 @@ export class CategoryEntity implements Category {
       _id: this.id,
       name: this.name,
       courseID: this.courseID,
-      isRandomSelection: this.isRandomSelection,
-      groupSize: this.groupSize,
+      isRandomSelection: this.isRandomSelection, // Keep camelCase for internal use
+      IsRandom: this.isRandomSelection, // Database column name
+      CourseSize: this.groupSize, // Database column name for group size
     };
   }
 }
