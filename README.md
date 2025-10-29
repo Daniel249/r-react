@@ -1,3 +1,7 @@
+# YOUTUBE DEMONSTRATION OF BOTH APPS 
+
+https://youtu.be/gsTd3f4PAPQ
+
 # React Native with Expo, React Navigation, and TypeScript with a clean architecture
 
 This is a starter project for building React Native apps with [Expo](https://expo.dev/), [React Navigation](https://reactnavigation.org/), and [TypeScript](https://www.typescriptlang.org/) using a clean architecture.
