@@ -7,11 +7,22 @@ export class CourseRemoteDataSourceImpl implements ICourseDataSource {
   private readonly baseUrl: string;
   private prefs: ILocalPreferences;
 
-  constructor(projectId = process.env.EXPO_PUBLIC_ROBLE_PROJECT_ID) {
-    if (!projectId) {
-      throw new Error("Missing EXPO_PUBLIC_ROBLE_PROJECT_ID env var");
+  constructor(projectId?: string) {
+    // Safely try to read environment variable with error handling
+    let envProjectId: string | undefined;
+    try {
+      envProjectId = process.env?.EXPO_PUBLIC_ROBLE_PROJECT_ID;
+    } catch (error) {
+      console.warn("Could not access process.env, using fallback");
+      envProjectId = undefined;
     }
-    this.baseUrl = `https://roble-api.openlab.uninorte.edu.co/database/${projectId}`;
+    
+    // Use provided projectId, then env var, then hardcoded fallback
+    const safeProjectId = projectId || envProjectId || "pruebadavid_a9af0fb6f8";
+    
+    console.log(`CourseRemoteDataSourceImpl: Using project ID: ${safeProjectId}`);
+    
+    this.baseUrl = `https://roble-api.openlab.uninorte.edu.co/database/${safeProjectId}`;
     this.prefs = LocalPreferencesAsyncStorage.getInstance();
   }
 

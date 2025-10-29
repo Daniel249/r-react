@@ -41,7 +41,7 @@ export default function GroupDetailScreen({ navigation, route }: { navigation: a
 
   // Get activities that belong to this group's category
   const groupActivities = activities.filter(activity => 
-    activity.category === group.categoryId || activity.catId === group.categoryId
+    activity.category === group.categoryId
   );
 
   // Get assessment activities only

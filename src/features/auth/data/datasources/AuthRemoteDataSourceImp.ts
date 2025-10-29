@@ -9,11 +9,22 @@ export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   private prefs: ILocalPreferences;
 
-  constructor(projectId = process.env.EXPO_PUBLIC_ROBLE_PROJECT_ID) {
-    if (!projectId) {
-      throw new Error("Missing EXPO_PUBLIC_ROBLE_PROJECT_ID env var");
+  constructor(projectId?: string) {
+    // Safely try to read environment variable with error handling
+    let envProjectId: string | undefined;
+    try {
+      envProjectId = process.env?.EXPO_PUBLIC_ROBLE_PROJECT_ID;
+    } catch (error) {
+      console.warn("Could not access process.env, using fallback");
+      envProjectId = undefined;
     }
-    this.projectId = projectId;
+    
+    // Use provided projectId, then env var, then hardcoded fallback
+    const safeProjectId = projectId || envProjectId || "pruebadavid_a9af0fb6f8";
+    
+    console.log(`AuthRemoteDataSourceImpl: Using project ID: ${safeProjectId}`);
+    
+    this.projectId = safeProjectId;
     this.baseUrl = `https://roble-api.openlab.uninorte.edu.co/auth/${this.projectId}`;
     this.prefs = LocalPreferencesAsyncStorage.getInstance();
   }

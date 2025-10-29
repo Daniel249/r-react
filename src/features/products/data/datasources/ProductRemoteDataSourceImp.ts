@@ -13,13 +13,24 @@ export class ProductRemoteDataSourceImp implements ProductDataSource {
 
   constructor(
     private authService: AuthRemoteDataSourceImpl,
-    projectId = process.env.EXPO_PUBLIC_ROBLE_PROJECT_ID
+    projectId?: string
   ) {
-    if (!projectId) {
-      throw new Error("Missing EXPO_PUBLIC_ROBLE_PROJECT_ID env var");
+    // Safely try to read environment variable with error handling
+    let envProjectId: string | undefined;
+    try {
+      envProjectId = process.env?.EXPO_PUBLIC_ROBLE_PROJECT_ID;
+    } catch (error) {
+      console.warn("Could not access process.env, using fallback");
+      envProjectId = undefined;
     }
+    
+    // Use provided projectId, then env var, then hardcoded fallback
+    const safeProjectId = projectId || envProjectId || "pruebadavid_a9af0fb6f8";
+    
+    console.log(`ProductRemoteDataSourceImp: Using project ID: ${safeProjectId}`);
+    
     this.prefs = LocalPreferencesAsyncStorage.getInstance();
-    this.projectId = projectId;
+    this.projectId = safeProjectId;
     this.baseUrl = `https://roble-api.openlab.uninorte.edu.co/database/${this.projectId}`;
   }
 
