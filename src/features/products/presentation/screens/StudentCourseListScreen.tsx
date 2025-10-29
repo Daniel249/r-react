@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     padding: 16,
+    paddingBottom: 80, // Add bottom padding to prevent FAB clash with navigation
   },
   courseCard: {
     marginBottom: 16,

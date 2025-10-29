@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import {
-    Appbar,
-    Button,
-    Card,
-    Chip,
-    Dialog,
-    IconButton,
-    List,
-    Paragraph,
-    Portal,
-    Surface,
-    Switch,
-    Text,
-    TextInput,
-    Title
+  Appbar,
+  Button,
+  Card,
+  Chip,
+  Dialog,
+  IconButton,
+  List,
+  Paragraph,
+  Portal,
+  Surface,
+  Switch,
+  Text,
+  TextInput,
+  Title
 } from 'react-native-paper';
 import { useAuth } from '../../../auth/presentation/context/authContext';
 import { CourseEntity } from '../../domain/entities/Course';
@@ -810,6 +810,7 @@ const styles = StyleSheet.create({
   tabContent: {
     flex: 1,
     padding: 16,
+    paddingBottom: 80, // Add bottom padding to prevent button clash with navigation
   },
   card: {
     marginBottom: 16,

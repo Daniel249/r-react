@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   drawerFooter: {
-    paddingBottom: 20,
+    paddingBottom: 80, // Increased padding to prevent clash with navigation bar
   },
   menuItem: {
     paddingHorizontal: 16,

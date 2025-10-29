@@ -184,7 +184,7 @@ export default function StudentCourseDetailScreen({ navigation, route }: { navig
     <ScrollView style={styles.tabContent}>
       <Card style={styles.card}>
         <Card.Content>
-          <Title>Course Information</Title>
+          <Title style={styles.sectionTitle}>Course Information</Title>
           <Text style={styles.courseTitle}>{course.name}</Text>
           <Text style={styles.courseDescription}>{course.description}</Text>
           
@@ -202,7 +202,7 @@ export default function StudentCourseDetailScreen({ navigation, route }: { navig
 
       <Card style={styles.card}>
         <Card.Content>
-          <Title>Categories</Title>
+          <Title style={styles.sectionTitle}>Categories</Title>
           {categories.length === 0 ? (
             <Text style={styles.emptyText}>No categories available yet.</Text>
           ) : (
@@ -379,6 +379,7 @@ const styles = StyleSheet.create({
   tabContent: {
     flex: 1,
     padding: 16,
+    paddingBottom: 80, // Add bottom padding to prevent button clash with navigation
   },
   card: {
     marginBottom: 16,
@@ -393,8 +394,12 @@ const styles = StyleSheet.create({
   courseTitle: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginTop: 8, // Reduced space between "Course Information" and course title
     marginBottom: 8,
     color: '#333',
+  },
+  sectionTitle: {
+    marginBottom: 8, // Consistent spacing for section titles
   },
   courseDescription: {
     fontSize: 16,
