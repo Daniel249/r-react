@@ -21,16 +21,12 @@ import { ProductRepositoryImpl } from "@/src/features/products/data/repositories
 import { ActivityUseCase } from "@/src/features/products/domain/usecases/ActivityUseCase";
 import { AddProductUseCase } from "@/src/features/products/domain/usecases/AddProductUseCase";
 import { CategoryUseCase } from "@/src/features/products/domain/usecases/CategoryUseCase";
-import { CreateCourseUseCase } from "@/src/features/products/domain/usecases/CreateCourseUseCase";
-import { DeleteCourseUseCase } from "@/src/features/products/domain/usecases/DeleteCourseUseCase";
+import { CourseUseCase } from "@/src/features/products/domain/usecases/CourseUseCase";
 import { DeleteProductUseCase } from "@/src/features/products/domain/usecases/DeleteProductUseCase";
-import { GetCoursesUseCase } from "@/src/features/products/domain/usecases/GetCoursesUseCase";
 import { GetProductByIdUseCase } from "@/src/features/products/domain/usecases/GetProductByIdUseCase";
 import { GetProductsUseCase } from "@/src/features/products/domain/usecases/GetProductsUseCase";
 import { GroupUseCase } from "@/src/features/products/domain/usecases/GroupUseCase";
-import { JoinCourseUseCase } from "@/src/features/products/domain/usecases/JoinCourseUseCase";
 import { UpdateAssessmentResultsUseCase } from "@/src/features/products/domain/usecases/UpdateAssessmentResultsUseCase";
-import { UpdateCourseUseCase } from "@/src/features/products/domain/usecases/UpdateCourseUseCase";
 import { UpdateProductUseCase } from "@/src/features/products/domain/usecases/UpdateProductUseCase";
 import { Container } from "./container";
 
@@ -68,11 +64,7 @@ export function DIProvider({ children }: { children: React.ReactNode }) {
 
         c.register(TOKENS.CourseRemoteDS, courseDS)
             .register(TOKENS.CourseRepo, courseRepo)
-            .register(TOKENS.GetCoursesUC, new GetCoursesUseCase(courseRepo))
-            .register(TOKENS.CreateCourseUC, new CreateCourseUseCase(courseRepo))
-            .register(TOKENS.UpdateCourseUC, new UpdateCourseUseCase(courseRepo))
-            .register(TOKENS.DeleteCourseUC, new DeleteCourseUseCase(courseRepo))
-            .register(TOKENS.JoinCourseUC, new JoinCourseUseCase(courseRepo));
+            .register(TOKENS.CourseUC, new CourseUseCase(courseRepo));
 
         // Category dependencies
         const categoryDS = new CategoryRemoteDataSourceImpl();

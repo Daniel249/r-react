@@ -1,10 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { CourseEntity } from '../../domain/entities/Course';
-import { CreateCourseUseCase } from '../../domain/usecases/CreateCourseUseCase';
-import { DeleteCourseUseCase } from '../../domain/usecases/DeleteCourseUseCase';
-import { GetCoursesUseCase } from '../../domain/usecases/GetCoursesUseCase';
-import { JoinCourseUseCase } from '../../domain/usecases/JoinCourseUseCase';
-import { UpdateCourseUseCase } from '../../domain/usecases/UpdateCourseUseCase';
+import { CourseUseCase } from '../../domain/usecases/CourseUseCase';
 
 interface CourseContextType {
   courses: CourseEntity[];
@@ -21,20 +17,12 @@ const CourseContext = createContext<CourseContextType | undefined>(undefined);
 
 interface CourseProviderProps {
   children: React.ReactNode;
-  getCoursesUseCase: GetCoursesUseCase;
-  createCourseUseCase: CreateCourseUseCase;
-  updateCourseUseCase: UpdateCourseUseCase;
-  deleteCourseUseCase: DeleteCourseUseCase;
-  joinCourseUseCase: JoinCourseUseCase;
+  courseUseCase: CourseUseCase;
 }
 
 export const CourseProvider: React.FC<CourseProviderProps> = ({
   children,
-  getCoursesUseCase,
-  createCourseUseCase,
-  updateCourseUseCase,
-  deleteCourseUseCase,
-  joinCourseUseCase,
+  courseUseCase,
 }) => {
   const [courses, setCourses] = useState<CourseEntity[]>([]);
   const [loading, setLoading] = useState(false);
@@ -44,7 +32,7 @@ export const CourseProvider: React.FC<CourseProviderProps> = ({
     try {
       setLoading(true);
       setError(null);
-      const coursesData = await getCoursesUseCase.execute();
+      const coursesData = await courseUseCase.getCourses();
       setCourses(coursesData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch courses');
@@ -57,7 +45,7 @@ export const CourseProvider: React.FC<CourseProviderProps> = ({
     try {
       setLoading(true);
       setError(null);
-      const newCourse = await createCourseUseCase.execute(name, description);
+      const newCourse = await courseUseCase.createCourse(name, description);
       setCourses(prevCourses => [...prevCourses, newCourse]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create course');
@@ -71,7 +59,7 @@ export const CourseProvider: React.FC<CourseProviderProps> = ({
     try {
       setLoading(true);
       setError(null);
-      await updateCourseUseCase.execute(courseId, name, description);
+      await courseUseCase.updateCourse(courseId, name, description);
       setCourses(prevCourses =>
         prevCourses.map(course =>
           course.id === courseId
@@ -91,7 +79,7 @@ export const CourseProvider: React.FC<CourseProviderProps> = ({
     try {
       setLoading(true);
       setError(null);
-      await deleteCourseUseCase.execute(courseId);
+      await courseUseCase.deleteCourse(courseId);
       setCourses(prevCourses => prevCourses.filter(course => course.id !== courseId));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete course');
@@ -105,7 +93,7 @@ export const CourseProvider: React.FC<CourseProviderProps> = ({
     try {
       setLoading(true);
       setError(null);
-      await joinCourseUseCase.execute(courseId, password);
+      await courseUseCase.joinCourse(courseId, password);
       // Refresh courses after joining
       await getCourses();
     } catch (err) {

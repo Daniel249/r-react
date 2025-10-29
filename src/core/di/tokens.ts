@@ -15,11 +15,7 @@ export const TOKENS = {
   // Course tokens
   CourseRemoteDS: Symbol("CourseRemoteDS"),
   CourseRepo: Symbol("CourseRepo"),
-  GetCoursesUC: Symbol("GetCoursesUC"),
-  CreateCourseUC: Symbol("CreateCourseUC"),
-  UpdateCourseUC: Symbol("UpdateCourseUC"),
-  DeleteCourseUC: Symbol("DeleteCourseUC"),
-  JoinCourseUC: Symbol("JoinCourseUC"),
+  CourseUC: Symbol("CourseUC"),
   // Category tokens
   CategoryRemoteDS: Symbol("CategoryRemoteDS"),
   CategoryRepo: Symbol("CategoryRepo"),
