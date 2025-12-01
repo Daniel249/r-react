@@ -13,8 +13,8 @@ export class CourseRepositoryImpl implements ICourseRepository {
     return this.courseDataSource.createCourse(name, description);
   }
 
-  async updateCourse(courseId: string, name: string, description: string): Promise<void> {
-    return this.courseDataSource.updateCourse(courseId, name, description);
+  async updateCourse(courseId: string, name: string, description: string, students?: string[]): Promise<void> {
+    return this.courseDataSource.updateCourse(courseId, name, description, students);
   }
 
   async deleteCourse(courseId: string): Promise<void> {

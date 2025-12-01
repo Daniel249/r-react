@@ -21,7 +21,7 @@ export class CourseUseCase {
   }
 
   // Update an existing course
-  async updateCourse(courseId: string, name: string, description: string): Promise<void> {
+  async updateCourse(courseId: string, name: string, description: string, students?: string[]): Promise<void> {
     if (!courseId.trim()) {
       throw new Error('Course ID is required');
     }
@@ -31,7 +31,7 @@ export class CourseUseCase {
     if (!description.trim()) {
       throw new Error('Course description is required');
     }
-    return this.courseRepository.updateCourse(courseId, name, description);
+    return this.courseRepository.updateCourse(courseId, name, description, students);
   }
 
   // Delete a course

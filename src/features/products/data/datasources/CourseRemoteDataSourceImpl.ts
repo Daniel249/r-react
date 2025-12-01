@@ -105,18 +105,25 @@ export class CourseRemoteDataSourceImpl implements ICourseDataSource {
     }
   }
 
-  async updateCourse(courseId: string, name: string, description: string): Promise<void> {
+  async updateCourse(courseId: string, name: string, description: string, students?: string[]): Promise<void> {
     try {
       const headers = await this.getHeaders();
       
+      const updates: any = {
+        Name: name,
+        Description: description,
+      };
+
+      // If students array is provided, include it in the update
+      if (students !== undefined) {
+        updates.Students = JSON.stringify(students);
+      }
+
       const updateData = {
         tableName: 'Course',
         idColumn: '_id',
         idValue: courseId,
-        updates: {
-          Name: name,
-          Description: description,
-        }
+        updates,
       };
 
       const response = await fetch(`${this.baseUrl}/update`, {

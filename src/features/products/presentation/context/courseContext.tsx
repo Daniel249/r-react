@@ -8,7 +8,7 @@ interface CourseContextType {
   error: string | null;
   getCourses: () => Promise<void>;
   createCourse: (name: string, description: string) => Promise<void>;
-  updateCourse: (courseId: string, name: string, description: string) => Promise<void>;
+  updateCourse: (courseId: string, name: string, description: string, students?: string[]) => Promise<void>;
   deleteCourse: (courseId: string) => Promise<void>;
   joinCourse: (courseId: string, password: string) => Promise<void>;
 }
@@ -55,18 +55,25 @@ export const CourseProvider: React.FC<CourseProviderProps> = ({
     }
   };
 
-  const updateCourse = async (courseId: string, name: string, description: string) => {
+  const updateCourse = async (courseId: string, name: string, description: string, students?: string[]) => {
     try {
       setLoading(true);
       setError(null);
-      await courseUseCase.updateCourse(courseId, name, description);
-      setCourses(prevCourses =>
-        prevCourses.map(course =>
-          course.id === courseId
-            ? new CourseEntity(courseId, name, description, course.studentsNames, course.teacher, course.activities, course.categories)
-            : course
-        )
-      );
+      await courseUseCase.updateCourse(courseId, name, description, students);
+      
+      // If students were updated, refresh the courses to get the latest data
+      if (students !== undefined) {
+        await getCourses();
+      } else {
+        // Otherwise just update the local state
+        setCourses(prevCourses =>
+          prevCourses.map(course =>
+            course.id === courseId
+              ? new CourseEntity(courseId, name, description, course.studentsNames, course.teacher, course.activities, course.categories)
+              : course
+          )
+        );
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update course');
       throw err;
