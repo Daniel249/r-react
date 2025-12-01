@@ -431,6 +431,15 @@ export default function TeacherCourseDetailScreen({ route, navigation }: any) {
                   title={activity.name}
                   description={`${activity.description}\nCategory: ${category?.name || 'Unknown'}`}
                   left={() => <List.Icon icon={activity.assessment ? "check-circle" : "circle-outline"} />}
+                  onPress={() => {
+                    if (category) {
+                      navigation.navigate('TeacherActivityGradesScreen', {
+                        activity,
+                        category,
+                        courseId
+                      });
+                    }
+                  }}
                   right={() => (
                     <View style={styles.listItemActions}>
                       {!activity.assessment && activity.id && (

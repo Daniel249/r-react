@@ -25,6 +25,7 @@ import AssessmentResultsScreen from "./features/products/presentation/screens/As
 import AssessmentScreen from "./features/products/presentation/screens/AssessmentScreen";
 import GroupDetailScreen from "./features/products/presentation/screens/GroupDetailScreen";
 import JoinGroupScreen from "./features/products/presentation/screens/JoinGroupScreen";
+import TeacherActivityGradesScreen from "./features/products/presentation/screens/TeacherActivityGradesScreen";
 
 
 const Stack = createStackNavigator();
@@ -220,6 +221,14 @@ export default function AuthFlow() {
             component={AssessmentScreen}
             options={{
               title: "Assessment",
+              headerShown: false, // Using custom Appbar in component
+            }}
+          />
+          <Stack.Screen
+            name="TeacherActivityGradesScreen"
+            component={TeacherActivityGradesScreen}
+            options={{
+              title: "Student Grades",
               headerShown: false, // Using custom Appbar in component
             }}
           />
